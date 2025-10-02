@@ -3,9 +3,9 @@ import type { Route } from "./+types/home";
 import { resumes } from "constants/index";
 import ResumeCard from "~/Components/ResumeCard";
 import { useNavigate } from "react-router";
-import { useEffect } from "react";
+import { use, useEffect } from "react";
 import { usePuterStore } from "~/lib/puter";
-
+import useState from 'react';
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "Resumind" },
@@ -14,12 +14,24 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-  const {auth} = usePuterStore();
+  const {auth, fs} = usePuterStore();
   const navigate = useNavigate();
+  const [resumeUrl, setResume] = useState('');
 
   useEffect( () => {
     if(!auth.isAuthenticated) navigate('/auth?next=/');
   }, [auth.isAuthenticated])
+
+  useEffect ( () =>{
+    const loadResume = async() =>{
+      const blob = await fs.read(resumes.imagePath);
+      if(!blob) return;
+      let url = URL.createObjectURL(blob);
+    }
+
+    loadResume();
+  }, [resume.imagePath]);
+
   return (
     <main className="bg-[url('/images/bg-main.svg')] bg-cover">
       <Navbar />
